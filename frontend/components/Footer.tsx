@@ -11,7 +11,7 @@ export default function Footer() {
           </div>
           
           <p className="text-sm text-muted-foreground text-center">
-            © 2024 Nuture Health Insurance. Designed for NUTM Students.
+            © 2025 Akolo Bulus. All rights reserved.
           </p>
           
           <div className="flex gap-6 text-sm text-muted-foreground">

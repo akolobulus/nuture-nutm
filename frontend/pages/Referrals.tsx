@@ -79,19 +79,122 @@ export default function Referrals() {
             <p className="text-muted-foreground">Earn rewards by referring fellow students</p>
           </div>
 
+          <div className="grid md:grid-cols-4 gap-6 mb-8">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Referrals</CardTitle>
+                <UserPlus className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{data?.referrals.length || 0}</div>
+                <p className="text-xs text-muted-foreground">All time</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Successful Referrals</CardTitle>
+                <Check className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {data?.referrals.filter(r => r.status === "completed").length || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">Completed</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Rewards Earned</CardTitle>
+                <Gift className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-[#00A859]">
+                  {formatCurrency(data?.totalRewards || 0)}
+                </div>
+                <p className="text-xs text-muted-foreground">All time earnings</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Pending Rewards</CardTitle>
+                <Gift className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-yellow-500">
+                  {formatCurrency(
+                    data?.referrals
+                      .filter(r => r.status === "pending")
+                      .reduce((sum, r) => sum + r.rewardAmount, 0) || 0
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">Processing</p>
+              </CardContent>
+            </Card>
+          </div>
+
           <div className="grid lg:grid-cols-3 gap-8 mb-8">
             <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle>Invite Your Friends</CardTitle>
+                <CardTitle>How It Works</CardTitle>
                 <CardDescription>
-                  Share your referral link or send an email invitation
+                  Share Nuture with your friends and earn rewards
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-full bg-[#00A859]/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[#00A859] font-bold">1</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-1">Share Your Link</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Copy your unique link and share it with fellow NUTM students.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-full bg-[#00A859]/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[#00A859] font-bold">2</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-1">They Register</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Your friend signs up for Nuture using your referral link.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-full bg-[#00A859]/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[#00A859] font-bold">3</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-1">You Earn Rewards</h3>
+                      <p className="text-sm text-muted-foreground">
+                        You get ₦500 once they subscribe to a plan. They get a discount too!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Share Your Link</CardTitle>
+                <CardDescription>
+                  Copy your unique referral link and share it to start earning
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Your Referral Link</Label>
                   <div className="flex gap-2">
-                    <Input value={referralLink} readOnly />
+                    <Input value={referralLink} readOnly className="font-mono text-sm" />
                     <Button
                       onClick={copyLink}
                       variant="outline"
@@ -106,59 +209,36 @@ export default function Referrals() {
                   </div>
                 </div>
 
-                <div className="border-t border-border pt-6">
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Send Email Invitation</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="friend@nutm.edu.ng"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                        />
-                        <Button
-                          type="submit"
-                          className="bg-[#00A859] hover:bg-[#008f4a] text-white flex-shrink-0"
-                          disabled={createReferral.isPending}
-                        >
-                          <UserPlus className="w-4 h-4 mr-2" />
-                          Invite
-                        </Button>
-                      </div>
+                <Button
+                  onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`Join Nuture for affordable student health insurance! Use my referral link: ${referralLink}`)}`, '_blank')}
+                  className="w-full bg-[#25D366] hover:bg-[#20BD5C] text-white"
+                >
+                  <Gift className="w-4 h-4 mr-2" />
+                  Share on WhatsApp
+                </Button>
+
+                <div className="border-t border-border pt-4">
+                  <form onSubmit={handleSubmit} className="space-y-3">
+                    <Label htmlFor="email" className="text-sm">Or send email invitation</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="friend@nutm.edu.ng"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="text-sm"
+                      />
+                      <Button
+                        type="submit"
+                        className="bg-[#00A859] hover:bg-[#008f4a] text-white flex-shrink-0"
+                        disabled={createReferral.isPending}
+                      >
+                        <UserPlus className="w-4 h-4" />
+                      </Button>
                     </div>
                   </form>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Gift className="w-5 h-5 text-[#00A859]" />
-                  Your Rewards
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-4">
-                  <div className="text-4xl font-bold text-[#00A859] mb-2">
-                    {formatCurrency(data?.totalRewards || 0)}
-                  </div>
-                  <p className="text-sm text-muted-foreground">Total Earned</p>
-                </div>
-                <div className="border-t border-border pt-4 mt-4">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-muted-foreground">Total Referrals</span>
-                    <span className="font-semibold">{data?.referrals.length || 0}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Completed</span>
-                    <span className="font-semibold">
-                      {data?.referrals.filter(r => r.status === "completed").length || 0}
-                    </span>
-                  </div>
                 </div>
               </CardContent>
             </Card>

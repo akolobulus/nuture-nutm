@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Activity, Home, FileText, Gift, Lightbulb, LayoutDashboard, Shield } from "lucide-react";
+import { Activity, Home, FileText, Gift, Lightbulb, LayoutDashboard, Shield, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
@@ -36,6 +36,10 @@ export default function Navbar() {
             <Link to="/health-tips" className="text-sm hover:text-[#00A859] transition-colors flex items-center gap-2">
               <Lightbulb className="w-4 h-4" />
               Health Tips
+            </Link>
+            <Link to="/team" className="text-sm hover:text-[#00A859] transition-colors flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Team
             </Link>
           </div>
 

@@ -2,6 +2,12 @@ import { Link } from "react-router-dom";
 import { Shield, FileText, Users, TrendingUp, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -78,6 +84,62 @@ export default function Home() {
                 </CardContent>
               </Card>
             </div>
+          </div>
+        </section>
+
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger className="text-left">What is Nuture?</AccordionTrigger>
+                <AccordionContent>
+                  Nuture is a web-based health insurance platform built exclusively for NUTM students. We offer simple, flexible, and affordable insurance plans designed for campus life. Students can subscribe, claim, and track their medical benefits directly online — no paperwork, no stress.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-2">
+                <AccordionTrigger className="text-left">Why do NUTM students need Nuture?</AccordionTrigger>
+                <AccordionContent>
+                  NUTM students currently lack affordable health insurance coverage. As a private university, NUTM is excluded from public university NHIS benefits. Additionally, parents' NHIS plans don't apply on campus because they're location-restricted. Nuture fills this gap by providing accessible, campus-focused health coverage.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-3">
+                <AccordionTrigger className="text-left">What plans are available?</AccordionTrigger>
+                <AccordionContent>
+                  We offer three tiers: Basic (₦2,500/year with coverage up to ₦50,000), Standard (₦4,000/year with coverage up to ₦150,000), and Premium (₦7,500/year with coverage up to ₦300,000). Each plan includes different benefits like health checkups, pharmacy bills, dental care, and emergency services.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-4">
+                <AccordionTrigger className="text-left">How do I submit a claim?</AccordionTrigger>
+                <AccordionContent>
+                  Simply upload your prescription or receipt through our digital claim submission system. You can track your claim status in real-time with updates like Pending, Approved, or Rejected. No physical paperwork required!
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-5">
+                <AccordionTrigger className="text-left">What is the referral program?</AccordionTrigger>
+                <AccordionContent>
+                  Earn ₦500 when you refer a fellow NUTM student who subscribes to a plan. Your friend also gets a discount! Share your unique referral link via WhatsApp or other channels to start earning rewards.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-6">
+                <AccordionTrigger className="text-left">Can I transfer my policy?</AccordionTrigger>
+                <AccordionContent>
+                  Yes! Students can safely transfer unused coverage to another student. This feature promotes community support and ensures coverage doesn't go to waste.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-7">
+                <AccordionTrigger className="text-left">How do auto-renewal reminders work?</AccordionTrigger>
+                <AccordionContent>
+                  We send automated email notifications before your plan expires, so you never lose coverage unexpectedly. You'll receive reminders with enough time to renew your subscription.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-8">
+                <AccordionTrigger className="text-left">Who can register for Nuture?</AccordionTrigger>
+                <AccordionContent>
+                  Only NUTM students can register. You'll need to verify your identity using your NUTM email address or student ID during the registration process.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </section>
 

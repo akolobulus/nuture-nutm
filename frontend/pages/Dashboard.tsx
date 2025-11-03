@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { CreditCard, FileText, Gift, Calendar, AlertCircle } from "lucide-react";
+import { CreditCard, FileText, Gift, Calendar, AlertCircle, ArrowRightLeft } from "lucide-react";
 import { useBackend } from "../lib/useBackend";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -178,6 +178,12 @@ export default function Dashboard() {
                   <Link to="/health-tips">
                     <Calendar className="mr-2 w-4 h-4" />
                     Health Tips
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full justify-start">
+                  <Link to="/transfer-policy">
+                    <ArrowRightLeft className="mr-2 w-4 h-4" />
+                    Transfer Policy
                   </Link>
                 </Button>
               </CardContent>

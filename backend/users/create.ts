@@ -1,4 +1,4 @@
-import { api } from "encore.dev/api";
+import { api, APIError } from "encore.dev/api";
 import db from "../db";
 import { randomUUID } from "crypto";
 
@@ -23,6 +23,26 @@ interface User {
 export const create = api<CreateUserRequest, User>(
   { method: "POST", path: "/users", expose: true },
   async (req) => {
+    if (!req.email.endsWith("@nutm.edu.ng")) {
+      throw APIError.invalidArgument(
+        "Only NUTM email addresses are allowed. Email must end with @nutm.edu.ng"
+      );
+    }
+
+    if (!req.nutmId || req.nutmId.trim().length === 0) {
+      throw APIError.invalidArgument("NUTM Student ID is required");
+    }
+
+    const existingUser = await db.queryRow`
+      SELECT id FROM users WHERE email = ${req.email} OR nutm_id = ${req.nutmId}
+    `;
+    
+    if (existingUser) {
+      throw APIError.alreadyExists(
+        "A user with this email or NUTM ID already exists"
+      );
+    }
+
     const id = randomUUID();
     
     await db.exec`

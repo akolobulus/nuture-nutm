@@ -11,6 +11,8 @@ import Referrals from "./pages/Referrals";
 import HealthTips from "./pages/HealthTips";
 import AdminDashboard from "./pages/AdminDashboard";
 import Checkout from "./pages/Checkout";
+import Team from "./pages/Team";
+import TransferPolicy from "./pages/TransferPolicy";
 
 const PUBLISHABLE_KEY = "pk_test_cHJlY2lvdXMtdGFoci01OC5jbGVyay5hY2NvdW50cy5kZXYk";
 
@@ -38,6 +40,8 @@ export default function App() {
               <Route path="/health-tips" element={<HealthTips />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/checkout/:planId" element={<Checkout />} />
+              <Route path="/team" element={<Team />} />
+              <Route path="/transfer-policy" element={<TransferPolicy />} />
             </Routes>
           </Router>
           <Toaster />
