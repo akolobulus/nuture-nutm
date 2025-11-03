@@ -41,7 +41,7 @@ export const list = api<void, ListPlansResponse>(
       coverageLimit: row.coverage_limit,
       monthlyPrice: row.monthly_price,
       description: row.description || "",
-      features: JSON.parse(row.features) as string[],
+      features: typeof row.features === 'string' ? JSON.parse(row.features) : row.features as string[],
     }));
     
     return { plans };

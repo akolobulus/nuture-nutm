@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Activity, Home, FileText, Gift, Lightbulb, LayoutDashboard, Shield, Users } from "lucide-react";
+import { Activity, Home, FileText, Gift, Lightbulb, LayoutDashboard, Shield, Users, Trophy, UserCircle } from "lucide-react";
+import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
@@ -41,11 +42,31 @@ export default function Navbar() {
               <Users className="w-4 h-4" />
               Team
             </Link>
+            <Link to="/leaderboard" className="text-sm hover:text-[#00A859] transition-colors flex items-center gap-2">
+              <Trophy className="w-4 h-4" />
+              Leaderboard
+            </Link>
           </div>
 
-          <Button asChild className="bg-[#00A859] hover:bg-[#008f4a] text-white">
-            <Link to="/submit-claim">Submit Claim</Link>
-          </Button>
+          <div className="flex items-center gap-3">
+            <SignedOut>
+              <Button variant="outline" asChild>
+                <Link to="/sign-in">Sign In</Link>
+              </Button>
+              <Button asChild className="bg-[#00A859] hover:bg-[#008f4a] text-white">
+                <Link to="/sign-up">Sign Up</Link>
+              </Button>
+            </SignedOut>
+            <SignedIn>
+              <Button variant="outline" asChild>
+                <Link to="/profile" className="flex items-center gap-2">
+                  <UserCircle className="w-4 h-4" />
+                  Profile
+                </Link>
+              </Button>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+          </div>
         </div>
       </div>
     </nav>

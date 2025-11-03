@@ -13,6 +13,11 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Checkout from "./pages/Checkout";
 import Team from "./pages/Team";
 import TransferPolicy from "./pages/TransferPolicy";
+import SignUp from "./pages/SignUp";
+import SignIn from "./pages/SignIn";
+import Onboarding from "./pages/Onboarding";
+import Profile from "./pages/Profile";
+import Leaderboard from "./pages/Leaderboard";
 
 const PUBLISHABLE_KEY = "pk_test_cHJlY2lvdXMtdGFoci01OC5jbGVyay5hY2NvdW50cy5kZXYk";
 
@@ -42,6 +47,11 @@ export default function App() {
               <Route path="/checkout/:planId" element={<Checkout />} />
               <Route path="/team" element={<Team />} />
               <Route path="/transfer-policy" element={<TransferPolicy />} />
+              <Route path="/sign-up" element={<SignUp />} />
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
             </Routes>
           </Router>
           <Toaster />

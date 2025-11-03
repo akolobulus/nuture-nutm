@@ -1,6 +1,10 @@
 import { api, APIError } from "encore.dev/api";
 import db from "../db";
 
+interface GetPlanRequest {
+  id: string;
+}
+
 interface InsurancePlan {
   id: string;
   name: string;
@@ -11,8 +15,7 @@ interface InsurancePlan {
   features: string[];
 }
 
-// Retrieves a specific insurance plan by ID
-export const get = api<{ id: string }, InsurancePlan>(
+export const get = api<GetPlanRequest, InsurancePlan>(
   { method: "GET", path: "/plans/:id", expose: true },
   async ({ id }) => {
     const row = await db.queryRow<{
@@ -40,7 +43,7 @@ export const get = api<{ id: string }, InsurancePlan>(
       coverageLimit: row.coverage_limit,
       monthlyPrice: row.monthly_price,
       description: row.description || "",
-      features: JSON.parse(row.features) as string[],
+      features: typeof row.features === 'string' ? JSON.parse(row.features) : row.features as string[],
     };
   }
 );
