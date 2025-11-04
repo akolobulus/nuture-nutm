@@ -1,26 +1,26 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useMemo } from "react";
 import { Lightbulb, Filter } from "lucide-react";
-import backend from "~backend/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { formatDate } from "../lib/format";
+import { mockHealthTips } from "../lib/mockData";
 
 export default function HealthTips() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["health-tips", categoryFilter],
-    queryFn: async () => {
-      const filter = categoryFilter === "all" ? undefined : categoryFilter;
-      return await backend.health_tips.list({ category: filter });
-    },
-  });
+  // Get unique categories from mock data
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(mockHealthTips.map(tip => tip.category)));
+    return cats.sort();
+  }, []);
 
-  const categories = ["Wellness", "Mental Health", "Nutrition", "Fitness"];
+  // Filter tips based on category
+  const filteredTips = useMemo(() => {
+    if (categoryFilter === "all") return mockHealthTips;
+    return mockHealthTips.filter(tip => tip.category === categoryFilter);
+  }, [categoryFilter]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -54,13 +54,9 @@ export default function HealthTips() {
             </div>
           </div>
 
-          {isLoading ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Loading tips...</p>
-            </div>
-          ) : data && data.tips.length > 0 ? (
+          {filteredTips.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {data.tips.map((tip: { id: string; title: string; content: string; category: string; createdAt: Date }) => (
+              {filteredTips.map((tip) => (
                 <Card key={tip.id} className="hover:border-[#00A859]/50 transition-all">
                   <CardHeader>
                     <div className="flex items-start justify-between mb-2">
@@ -72,10 +68,7 @@ export default function HealthTips() {
                     <CardTitle className="text-xl">{tip.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground mb-4">{tip.content}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatDate(tip.createdAt)}
-                    </p>
+                    <p className="text-muted-foreground">{tip.content}</p>
                   </CardContent>
                 </Card>
               ))}

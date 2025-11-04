@@ -1,31 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
-import backend from "~backend/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { formatCurrency } from "../lib/format";
+import { mockPlans } from "../lib/mockData";
 
 export default function Plans() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["plans"],
-    queryFn: async () => await backend.plans.list(),
-  });
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-muted-foreground">Loading plans...</p>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  const plans = mockPlans;
 
   const getTierBadge = (tier: string) => {
     const colors: Record<string, string> = {
@@ -50,7 +34,7 @@ export default function Plans() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {data?.plans.map((plan) => (
+            {plans.map((plan) => (
               <Card 
                 key={plan.id}
                 className="border-2 hover:border-[#00A859]/50 transition-all relative"
