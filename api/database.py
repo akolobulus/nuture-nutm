@@ -155,10 +155,11 @@ def seed_data():
             ('plan-3', 'Premium Student Plan', 'premium', 200000000, 1500000,
              'Full coverage with mental health', '["Emergency Care", "Full Medication", "Specialist Visits", "Dental Care", "Mental Health", "Lab Tests"]', 1)
         ]
-        cursor.executemany(
-            'INSERT INTO insurance_plans VALUES (?, ?, ?, ?, ?, ?, ?, ?datetime("now"))',
-            plans
-        )
+        for plan in plans:
+            cursor.execute(
+                'INSERT INTO insurance_plans (id, name, tier, coverage_limit, monthly_price, description, features, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                plan
+            )
     
     cursor.execute("SELECT COUNT(*) FROM health_tips")
     if cursor.fetchone()[0] == 0:
@@ -169,10 +170,11 @@ def seed_data():
             ('tip-4', 'Mental Health', 'Take time for activities that reduce stress and promote relaxation.', 'Mental Health', 1),
             ('tip-5', 'Sleep Well', 'Get 7-9 hours of quality sleep each night for better health.', 'General', 1)
         ]
-        cursor.executemany(
-            'INSERT INTO health_tips VALUES (?, ?, ?, ?, ?, datetime("now"))',
-            tips
-        )
+        for tip in tips:
+            cursor.execute(
+                'INSERT INTO health_tips (id, title, content, category, published) VALUES (?, ?, ?, ?, ?)',
+                tip
+            )
     
     conn.commit()
     conn.close()
