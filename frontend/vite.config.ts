@@ -7,10 +7,11 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5000,
-    allowedHosts: true,
+    strictPort: true,
     hmr: {
       clientPort: 443,
-      protocol: 'wss'
+      protocol: 'wss',
+      host: process.env.REPLIT_DEV_DOMAIN
     }
   },
   resolve: {
