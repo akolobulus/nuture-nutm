@@ -1,86 +1,58 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CreditCard, Loader2, CheckCircle } from "lucide-react";
-import { useBackend } from "../lib/useBackend";
+import { CreditCard, Check } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
+import { Badge } from "@/components/ui/badge";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { PAYMENT_METHODS } from "../config";
 import { formatCurrency } from "../lib/format";
+import { useToast } from "@/components/ui/use-toast";
+import { mockPlans, mockStorage } from "../lib/mockData";
 
 export default function Checkout() {
-  const { planId } = useParams();
+  const { planId } = useParams<{ planId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const backend = useBackend();
+  const [paymentMethod, setPaymentMethod] = useState<string>("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [cvv, setCvv] = useState("");
+  const plan = mockPlans.find(p => p.id === planId);
 
-  const { data: plan, isLoading } = useQuery({
-    queryKey: ["plan", planId],
-    queryFn: async () => await backend.plans.get({ id: planId! }),
-    enabled: !!planId,
-  });
-
-  const processPayment = useMutation({
-    mutationFn: async () => {
-      const subscription = await backend.subscriptions.create({
-        planId: planId!,
-        autoRenew: true,
-      });
-
-      await backend.payments.create({
-        subscriptionId: subscription.id,
-        amount: plan!.monthlyPrice,
-        paymentMethod,
-      });
-
-      return subscription;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["subscription"] });
-      toast({
-        title: "Payment Successful!",
-        description: "Your insurance plan is now active.",
-      });
-      navigate("/dashboard");
-    },
-    onError: (error: Error) => {
-      console.error("Payment error:", error);
-      toast({
-        title: "Payment Failed",
-        description: error.message || "Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    processPayment.mutate();
-  };
+    if (!plan || !paymentMethod) return;
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+    setIsProcessing(true);
+    
+    // Simulate payment processing
+    setTimeout(() => {
+      // Create subscription
+      const newSubscription = {
+        id: `sub-${Date.now()}`,
+        userId: 'current-user',
+        planId: plan.id,
+        status: 'active' as const,
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        autoRenew: true,
+      };
+
+      mockStorage.saveSubscription(newSubscription);
+      
+      toast({
+        title: "Subscription Created!",
+        description: `You're now enrolled in the ${plan.name}`,
+      });
+      
+      setIsProcessing(false);
+      navigate("/dashboard");
+    }, 1500);
+  };
 
   if (!plan) {
     return (
@@ -94,140 +66,148 @@ export default function Checkout() {
     );
   }
 
+  const getTierBadge = (tier: string) => {
+    const colors: Record<string, string> = {
+      basic: "bg-blue-500/20 text-blue-500",
+      standard: "bg-purple-500/20 text-purple-500",
+      premium: "bg-[#00A859]/20 text-[#00A859]",
+    };
+    return colors[tier] || "bg-gray-500/20 text-gray-500";
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
       <main className="flex-1 py-12 px-4">
         <div className="container mx-auto max-w-4xl">
-          <h1 className="text-4xl font-bold mb-8">Checkout</h1>
+          <h1 className="text-4xl font-bold mb-8">Complete Your Purchase</h1>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CreditCard className="w-5 h-5" />
-                    Payment Details
-                  </CardTitle>
-                  <CardDescription>
-                    Complete your payment to activate your insurance plan
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="method">Payment Method</Label>
-                      <Select value={paymentMethod} onValueChange={setPaymentMethod} required>
-                        <SelectTrigger id="method">
-                          <SelectValue placeholder="Select payment method" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {PAYMENT_METHODS.map((method) => (
-                            <SelectItem key={method} value={method}>
-                              {method}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="card">Card Number</Label>
-                      <Input
-                        id="card"
-                        placeholder="1234 5678 9012 3456"
-                        value={cardNumber}
-                        onChange={(e) => setCardNumber(e.target.value)}
-                        required
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="expiry">Expiry Date</Label>
-                        <Input
-                          id="expiry"
-                          placeholder="MM/YY"
-                          value={expiryDate}
-                          onChange={(e) => setExpiryDate(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="cvv">CVV</Label>
-                        <Input
-                          id="cvv"
-                          placeholder="123"
-                          value={cvv}
-                          onChange={(e) => setCvv(e.target.value)}
-                          required
-                          maxLength={4}
-                        />
-                      </div>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      className="w-full bg-[#00A859] hover:bg-[#008f4a] text-white"
-                      disabled={processPayment.isPending}
-                    >
-                      {processPayment.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle className="mr-2 h-4 w-4" />
-                          Complete Payment
-                        </>
-                      )}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div>
-              <Card className="sticky top-24">
-                <CardHeader>
-                  <CardTitle>Order Summary</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+          <div className="grid lg:grid-cols-2 gap-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>Plan Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground mb-1">Selected Plan</p>
-                    <p className="text-lg font-semibold">{plan.name}</p>
+                    <h3 className="text-2xl font-bold">{plan.name}</h3>
+                    <p className="text-muted-foreground">{plan.description}</p>
+                  </div>
+                  <Badge className={getTierBadge(plan.tier)}>
+                    {plan.tier.toUpperCase()}
+                  </Badge>
+                </div>
+
+                <div className="border-t border-border pt-4">
+                  <h4 className="font-semibold mb-2">Coverage Limit</h4>
+                  <p className="text-2xl font-bold">{formatCurrency(plan.coverageLimit)}</p>
+                </div>
+
+                <div className="border-t border-border pt-4">
+                  <h4 className="font-semibold mb-3">Features</h4>
+                  <ul className="space-y-2">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-start gap-2 text-sm">
+                        <Check className="w-4 h-4 text-[#00A859] mt-0.5 flex-shrink-0" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="border-t border-border pt-4">
+                  <div className="flex justify-between items-center text-2xl font-bold">
+                    <span>Monthly Total</span>
+                    <span className="text-[#00A859]">{formatCurrency(plan.monthlyPrice)}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Payment Information</CardTitle>
+                <CardDescription>Complete your subscription</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="paymentMethod">Payment Method</Label>
+                    <Select value={paymentMethod} onValueChange={setPaymentMethod} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select payment method" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PAYMENT_METHODS.map((method) => (
+                          <SelectItem key={method} value={method}>
+                            {method}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
-                  <div className="border-t border-border pt-4">
-                    <div className="flex justify-between mb-2">
-                      <span className="text-muted-foreground">Monthly Price</span>
-                      <span className="font-medium">{formatCurrency(plan.monthlyPrice)}</span>
+                  {paymentMethod === "Credit Card" || paymentMethod === "Debit Card" ? (
+                    <>
+                      <div className="space-y-2">
+                        <Label htmlFor="cardNumber">Card Number</Label>
+                        <Input
+                          id="cardNumber"
+                          placeholder="1234 5678 9012 3456"
+                          required
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="expiry">Expiry Date</Label>
+                          <Input
+                            id="expiry"
+                            placeholder="MM/YY"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="cvv">CVV</Label>
+                          <Input
+                            id="cvv"
+                            placeholder="123"
+                            maxLength={3}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </>
+                  ) : paymentMethod === "Bank Transfer" ? (
+                    <div className="bg-muted/50 p-4 rounded-lg text-sm">
+                      <p className="font-semibold mb-2">Bank Details:</p>
+                      <p>Account Name: Nuture Health Insurance</p>
+                      <p>Account Number: 0123456789</p>
+                      <p>Bank: First Bank of Nigeria</p>
                     </div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-muted-foreground">Coverage Limit</span>
-                      <span className="font-medium">{formatCurrency(plan.coverageLimit)}</span>
+                  ) : paymentMethod === "USSD" ? (
+                    <div className="bg-muted/50 p-4 rounded-lg text-sm">
+                      <p className="font-semibold mb-2">USSD Code:</p>
+                      <p className="text-xl font-bold">*737*1*{formatCurrency(plan.monthlyPrice)}#</p>
+                      <p className="text-xs text-muted-foreground mt-2">Dial the code above to complete payment</p>
                     </div>
-                  </div>
+                  ) : null}
 
-                  <div className="border-t border-border pt-4">
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold">Total Due Today</span>
-                      <span className="text-2xl font-bold text-[#00A859]">
-                        {formatCurrency(plan.monthlyPrice)}
-                      </span>
-                    </div>
-                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full bg-[#00A859] hover:bg-[#008f4a] text-white"
+                    disabled={!paymentMethod || isProcessing}
+                  >
+                    <CreditCard className="mr-2 w-4 h-4" />
+                    {isProcessing ? "Processing..." : `Pay ${formatCurrency(plan.monthlyPrice)}`}
+                  </Button>
 
-                  <div className="bg-[#00A859]/10 border border-[#00A859]/20 rounded-lg p-3">
-                    <p className="text-sm">
-                      Your plan will auto-renew monthly. Cancel anytime from your dashboard.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <p className="text-xs text-muted-foreground text-center">
+                    By proceeding, you agree to our terms and conditions
+                  </p>
+                </form>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>

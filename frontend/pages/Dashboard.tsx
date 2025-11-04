@@ -1,37 +1,33 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { CreditCard, FileText, Gift, Calendar, AlertCircle, ArrowRightLeft } from "lucide-react";
-import { useBackend } from "../lib/useBackend";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-
+import { mockStorage, mockPlans } from "../lib/mockData";
 import { formatCurrency, formatDate, getDaysUntil, getStatusColor } from "../lib/format";
 import { Link } from "react-router-dom";
 
 export default function Dashboard() {
-  const backend = useBackend();
+  const [subscription, setSubscription] = useState(mockStorage.getSubscription());
+  const [claims, setClaims] = useState(mockStorage.getClaims());
+  const [referrals, setReferrals] = useState(mockStorage.getReferrals());
 
-  const { data: subscription } = useQuery({
-    queryKey: ["subscription"],
-    queryFn: async () => await backend.subscriptions.getByUser(),
-  });
+  useEffect(() => {
+    // Reload data when component mounts
+    setSubscription(mockStorage.getSubscription());
+    setClaims(mockStorage.getClaims());
+    setReferrals(mockStorage.getReferrals());
+  }, []);
 
-  const { data: claims } = useQuery({
-    queryKey: ["claims"],
-    queryFn: async () => await backend.claims.listByUser({}),
-  });
-
-  const { data: referrals } = useQuery({
-    queryKey: ["referrals"],
-    queryFn: async () => await backend.referrals.listByUser(),
-  });
-
-  const activeSub = subscription?.subscription;
-  const daysUntilRenewal = activeSub ? getDaysUntil(activeSub.endDate) : 0;
+  const activeSub = subscription;
+  const plan = activeSub ? mockPlans.find(p => p.id === activeSub.planId) : null;
+  const daysUntilRenewal = activeSub ? getDaysUntil(new Date(activeSub.endDate)) : 0;
   const needsRenewal = daysUntilRenewal <= 7 && daysUntilRenewal > 0;
+  
+  const totalRewards = referrals.filter(r => r.status === 'completed').reduce((sum, r) => sum + r.rewardAmount, 0);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -62,10 +58,10 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {activeSub ? activeSub.planName : "None"}
+                  {plan ? plan.name : "None"}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {activeSub ? `Renews ${formatDate(activeSub.endDate)}` : "No active subscription"}
+                  {activeSub ? `Renews ${formatDate(new Date(activeSub.endDate))}` : "No active subscription"}
                 </p>
               </CardContent>
             </Card>
@@ -76,9 +72,9 @@ export default function Dashboard() {
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{claims?.claims.length || 0}</div>
+                <div className="text-2xl font-bold">{claims.length}</div>
                 <p className="text-xs text-muted-foreground">
-                  {claims?.claims.filter(c => c.status === "pending").length || 0} pending
+                  {claims.filter(c => c.status === "pending").length} pending
                 </p>
               </CardContent>
             </Card>
@@ -90,10 +86,10 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {formatCurrency(referrals?.totalRewards || 0)}
+                  {formatCurrency(totalRewards)}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {referrals?.referrals.length || 0} total referrals
+                  {referrals.length} total referrals
                 </p>
               </CardContent>
             </Card>
@@ -121,13 +117,13 @@ export default function Dashboard() {
                 <CardDescription>Your latest claim submissions</CardDescription>
               </CardHeader>
               <CardContent>
-                {claims && claims.claims.length > 0 ? (
+                {claims.length > 0 ? (
                   <div className="space-y-4">
-                    {claims.claims.slice(0, 5).map((claim) => (
+                    {claims.slice(0, 5).map((claim) => (
                       <div key={claim.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
                         <div className="flex-1">
                           <p className="font-medium">{claim.description}</p>
-                          <p className="text-sm text-muted-foreground">{formatDate(claim.submittedAt)}</p>
+                          <p className="text-sm text-muted-foreground">{formatDate(new Date(claim.submittedAt))}</p>
                         </div>
                         <div className="text-right">
                           <p className="font-bold">{formatCurrency(claim.amount)}</p>
