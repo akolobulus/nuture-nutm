@@ -66,7 +66,7 @@ export interface Referral {
 // Insurance Plans Data
 export const mockPlans: InsurancePlan[] = [
   {
-    id: 'plan-1',
+    id: 'basic',
     name: 'Basic Student Plan',
     tier: 'basic',
     coverageLimit: 50000000,
@@ -76,7 +76,7 @@ export const mockPlans: InsurancePlan[] = [
     active: true,
   },
   {
-    id: 'plan-2',
+    id: 'standard',
     name: 'Standard Student Plan',
     tier: 'standard',
     coverageLimit: 100000000,
@@ -86,7 +86,7 @@ export const mockPlans: InsurancePlan[] = [
     active: true,
   },
   {
-    id: 'plan-3',
+    id: 'premium',
     name: 'Premium Student Plan',
     tier: 'premium',
     coverageLimit: 200000000,

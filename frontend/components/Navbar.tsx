@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import { Activity, Home, FileText, Gift, Lightbulb, LayoutDashboard, Shield, Users, Trophy, UserCircle } from "lucide-react";
-import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
+import { Activity, Home, FileText, Gift, Lightbulb, LayoutDashboard, Shield, Users, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
@@ -49,23 +48,9 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-3">
-            <SignedOut>
-              <Button variant="outline" asChild>
-                <Link to="/sign-in">Sign In</Link>
-              </Button>
-              <Button asChild className="bg-[#00A859] hover:bg-[#008f4a] text-white">
-                <Link to="/sign-up">Sign Up</Link>
-              </Button>
-            </SignedOut>
-            <SignedIn>
-              <Button variant="outline" asChild>
-                <Link to="/profile" className="flex items-center gap-2">
-                  <UserCircle className="w-4 h-4" />
-                  Profile
-                </Link>
-              </Button>
-              <UserButton afterSignOutUrl="/" />
-            </SignedIn>
+            <Button variant="outline" asChild>
+              <Link to="/dashboard">Dashboard</Link>
+            </Button>
           </div>
         </div>
       </div>
