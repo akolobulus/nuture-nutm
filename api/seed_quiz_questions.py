@@ -162,7 +162,18 @@ def seed_quiz_questions():
         ("How often should you meditate?", "Never", "Daily 10-20 minutes", "Once a year", "Only when stressed", "B", "Mental Health"),
         ("What is the ideal weight for health?", "Underweight", "Healthy BMI range", "Overweight", "Obese", "B", "Weight Management"),
         ("Which habit prevents Alzheimer's?", "Avoid thinking", "Mental stimulation", "Poor diet", "Isolation", "B", "Brain Health"),
-        ("What is the main benefit of whole grains?", "High sugar", "Fiber and nutrients", "Low nutrition", "Weight gain", "B", "Nutrition")
+        ("What is the main benefit of whole grains?", "High sugar", "Fiber and nutrients", "Low nutrition", "Weight gain", "B", "Nutrition"),
+        
+        ("How can you prevent food allergies?", "Avoid all foods", "Gradual introduction", "Skip meals", "Only processed food", "B", "Nutrition"),
+        ("What is the danger of sitting too long?", "Better health", "Increased disease risk", "Muscle gain", "Improved circulation", "B", "General Health"),
+        ("Which vitamin helps immunity?", "Vitamin C", "Vitamin B", "Vitamin K", "Vitamin E", "A", "Nutrition"),
+        ("What is the best exercise for abs?", "Running", "Planks and crunches", "Swimming", "Walking", "B", "Fitness"),
+        ("How often should you change bed sheets?", "Once a year", "Once a week", "Once a month", "Never", "B", "Hygiene"),
+        ("What causes dandruff?", "Too much washing", "Dry scalp or fungus", "Too much water", "Exercise", "B", "Skin Health"),
+        ("Which food prevents cancer?", "Processed meat", "Colorful vegetables", "Sugary drinks", "Fried foods", "B", "Nutrition"),
+        ("What is the recommended screen distance?", "Touch screen", "20-26 inches", "2 inches", "10 feet", "B", "Eye Health"),
+        ("How can you prevent nosebleeds?", "Dry air", "Keep moist, avoid picking", "Hit nose", "Ignore it", "B", "General Health"),
+        ("What is the best time to exercise?", "Only midnight", "When consistent for you", "Never", "Only 3am", "B", "Fitness")
     ]
     
     conn = sqlite3.connect(DATABASE_PATH)
