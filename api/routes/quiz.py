@@ -13,10 +13,39 @@ def get_current_week():
     year = now.year
     return week_number, year
 
+def ensure_questions_for_week(week_number, year):
+    """Auto-rotate questions for new weeks by copying from week 45, 2025"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        
+        # Check if current week has questions
+        cursor.execute('''
+            SELECT COUNT(*) as count FROM quiz_questions 
+            WHERE week_number = ? AND year = ?
+        ''', (week_number, year))
+        count = cursor.fetchone()['count']
+        
+        if count == 0:
+            # Copy questions from the template week (1, 2025) to current week
+            cursor.execute('''
+                INSERT INTO quiz_questions 
+                (id, question, option_a, option_b, option_c, option_d, correct_answer, category, week_number, year)
+                SELECT 
+                    lower(hex(randomblob(16))),
+                    question, option_a, option_b, option_c, option_d, correct_answer, category, ?, ?
+                FROM quiz_questions 
+                WHERE week_number = 1 AND year = 2025
+            ''', (week_number, year))
+            conn.commit()
+            print(f"Auto-generated {cursor.rowcount} questions for week {week_number}, {year}")
+
 @bp.route('/questions', methods=['GET'])
 @require_auth
 def get_quiz_questions():
     week_number, year = get_current_week()
+    
+    # Ensure questions exist for current week
+    ensure_questions_for_week(week_number, year)
     
     with get_db() as conn:
         cursor = conn.cursor()

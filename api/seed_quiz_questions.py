@@ -6,8 +6,9 @@ from datetime import datetime
 DATABASE_PATH = os.path.join(os.path.dirname(__file__), 'nuture.db')
 
 def seed_quiz_questions():
-    week_number = datetime.now().isocalendar()[1]
-    year = datetime.now().year
+    # Fixed template week for rotation (week 1, 2025)
+    week_number = 1
+    year = 2025
     
     questions = [
         ("How many hours of sleep should a college student get per night?", "5-6 hours", "7-9 hours", "10-12 hours", "4-5 hours", "B", "Sleep Health"),
