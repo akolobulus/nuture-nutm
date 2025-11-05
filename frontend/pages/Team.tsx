@@ -36,7 +36,7 @@ export default function Team() {
                   
                   <div className="flex justify-center gap-4">
                     <a
-                      href="https://www.linkedin.com/in/akolo-bulus/"
+                      href="https://www.linkedin.com/in/akolo-bulus"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-10 h-10 rounded-full bg-[#00A859]/10 hover:bg-[#00A859]/20 flex items-center justify-center transition-colors"
@@ -46,7 +46,7 @@ export default function Team() {
                     </a>
                     
                     <a
-                      href="https://github.com/akolobulus/"
+                      href="https://github.com/akolobulus"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-10 h-10 rounded-full bg-[#00A859]/10 hover:bg-[#00A859]/20 flex items-center justify-center transition-colors"
@@ -56,7 +56,7 @@ export default function Team() {
                     </a>
                     
                     <a
-                      href="https://www.instagram.com/heisakolo/"
+                      href="https://www.instagram.com/heisakolo"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-10 h-10 rounded-full bg-[#00A859]/10 hover:bg-[#00A859]/20 flex items-center justify-center transition-colors"
